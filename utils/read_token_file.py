@@ -5,3 +5,5 @@ def get(path):
             print(f"{path} is empty")
             sys.exit(1)
         return value
+        
+get("../token/access_token.txt")
