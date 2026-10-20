@@ -1,10 +1,10 @@
 import requests
-from read_token_file import get
+from src.utils.read_token_file import get
 
 
 def download_file(dlink):
     # Read the access token and prepare the download request.
-    access_token = get("../token/access_token.txt")
+    access_token = get("access_token.txt")
 
     try:
         response = requests.get(

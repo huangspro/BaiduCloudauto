@@ -1,10 +1,10 @@
 import requests
-from read_token_file import get
+from src.utils.read_token_file import get
 
 
 def list_files(path: str) -> list[dict]:
     # Read the Baidu Netdisk access token.
-    access_token = get("../token/access_token.txt")
+    access_token = get("access_token.txt")
 
     # Configure the directory listing request.
     url = "https://pan.baidu.com/rest/2.0/xpan/file"

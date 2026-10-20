@@ -1,9 +1,11 @@
 import requests
-from read_token_file import get
+from src.utils.read_token_file import get
+
+
 
 url = "https://pan.baidu.com/rest/2.0/xpan/nas"
 
-access_token = get("../token/access_token.txt")
+access_token = get("access_token.txt")
 
 params = {
     "method": "uinfo",

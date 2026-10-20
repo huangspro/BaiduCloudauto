@@ -1,10 +1,10 @@
 import json
 import requests
-from read_token_file import get
+from src.utils.read_token_file import get
 
 
 def get_dlink(fs_id, path):
-    access_token = get("../token/access_token.txt")'
+    access_token = get("access_token.txt")'
     
     # Configure the file metadata request.
     url = "https://pan.baidu.com/rest/2.0/xpan/multimedia"

@@ -1,13 +1,14 @@
 import requests
 import sys
-from read_token_file import get
+from src.utils.read_token_file import get
+
 
 url = "https://openapi.baidu.com/oauth/2.0/token"
 
-authorization_code = get("../token/authorization_code.txt")
-appid = get("../token/appid.txt")
-appkey = get("../token/appkey.txt")
-secretid = get("../token/secretkey.txt")
+authorization_code = get("authorization_code.txt")
+appid = get("appid.txt")
+appkey = get("appkey.txt")
+secretid = get("secretkey.txt")
 
 params = {
     "grant_type": "authorization_code",
@@ -28,8 +29,8 @@ if "access_token" not in data or "refresh_token" not in data:
 access_token = data["access_token"]
 refresh_token = data["refresh_token"]
 
-with open("../token/access_token.txt", "w", encoding="utf-8") as f:
+with open("access_token.txt", "w", encoding="utf-8") as f:
     f.write(access_token)
 
-with open("../token/refresh_token.txt", "w", encoding="utf-8") as f:
+with open("refresh_token.txt", "w", encoding="utf-8") as f:
     f.write(refresh_token)
