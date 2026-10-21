@@ -1,16 +1,10 @@
 <!DOCTYPE html>
 <html>
 <body>
-    <input type="text" id="share_link" placeholder="百度网盘分享链接">
-    <input type="text" id="share_password" placeholder="提取码">
-    <button onclick="submit()">SUMMIT</button>
-
-    <script>
-        function submit() {
-            alert(document.getElementById("a").value + " " +
-                  document.getElementById("b").value);
-        }
-    </script>
+    <form action="/apply" method="post">
+        <input type="text" id="share_link" name="share_link" placeholder="百度网盘分享链接">
+        <input type="text" id="share_password" name="share_password" placeholder="提取码">
+        <button type="submit">SUMMIT</button>
+    </form>
 </body>
 </html>
-

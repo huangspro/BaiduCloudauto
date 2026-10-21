@@ -11,7 +11,12 @@ class TransferEvent(Event):
         self.share_link = share_link
         self.password = password
 
-class DownlloadEvent(Event):
+class DownloadEvent(Event):
     def __init__(self, file_name):
         super().__init__("DownloadEvent")
         self.file_name = file_name
+
+class ReturnLinksEvent(Event):
+    def __init__(self, file_name, path:list):
+        super().__init__("ReturnLinksEvent")
+        self.path = path

@@ -1,7 +1,7 @@
 import requests
 from src.utils.read_token_file import get
 
-
+# list all files and folders in a path, warning: the input path should follow the format "/apps/autotool/mydir/"
 def list_files(path: str) -> list[dict]:
     # Read the Baidu Netdisk access token.
     access_token = get("access_token.txt")
@@ -41,6 +41,15 @@ def list_files(path: str) -> list[dict]:
         }
         for item in data.get("list", [])
     ]
-    
-    
+
+# list all files in all folders using dfs
+def list_all_files(path: str) -> list[dict]:
+    result = []
+    tem = list_files(path)
+    for i in tem:
+        if i["is_folder"]:
+            result.extend(list_all_files(i["path"] + "/"))
+        else:
+            result.append(i)
+    return result
 
