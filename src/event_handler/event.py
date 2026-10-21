@@ -18,7 +18,7 @@ class DownloadEvent(Event):
         self.file_name = file_name
 
 class ReturnLinksEvent(Event):
-    def __init__(self, file_name, path:list, to_extract_code):
+    def __init__(self, path:list, to_extract_code):
         super().__init__("ReturnLinksEvent")
         self.path = path
         self.to_extract_code = to_extract_code

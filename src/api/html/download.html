@@ -1,0 +1,550 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080b18">
+    <meta name="description" content="云端资源提交中心">
+    <title>云端资源提交中心</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg: #080b18;
+            --cyan: #00f5ff;
+            --purple: #9b5cff;
+            --text: #eef4ff;
+            --muted: #8591b3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            width: 100%;
+            min-height: 100%;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            padding: clamp(14px, 4vw, 40px);
+            color: var(--text);
+            font-family: "Noto Sans SC", sans-serif;
+            background:
+                radial-gradient(ellipse at 15% 15%, #17224b 0%, transparent 45%),
+                radial-gradient(ellipse at 85% 85%, #25113e 0%, transparent 45%),
+                var(--bg);
+        }
+
+        /* 背景网格 */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(#6b8cff0b 1px, transparent 1px),
+                linear-gradient(90deg, #6b8cff0b 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: linear-gradient(to bottom, black, transparent 90%);
+        }
+
+        /* 动态光球 */
+        .orb {
+            position: fixed;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: .22;
+            pointer-events: none;
+            animation: float 9s ease-in-out infinite alternate;
+        }
+
+        .orb-cyan {
+            top: -120px;
+            left: -80px;
+            background: var(--cyan);
+        }
+
+        .orb-purple {
+            bottom: -140px;
+            right: -70px;
+            background: var(--purple);
+            animation-delay: -4s;
+        }
+
+        @keyframes float {
+            from {
+                transform: translate(0, 0) scale(1);
+            }
+            to {
+                transform: translate(55px, 40px) scale(1.15);
+            }
+        }
+
+        /* 主卡片 */
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 460px;
+            min-width: 0;
+            margin: auto;
+            padding: clamp(24px, 5vw, 42px)
+                     clamp(18px, 5vw, 36px);
+            overflow: hidden;
+            border: 1px solid #91a8ff35;
+            border-radius: 24px;
+            background: linear-gradient(
+                145deg,
+                rgba(22, 29, 57, .88),
+                rgba(12, 15, 33, .94)
+            );
+            box-shadow:
+                0 0 60px #6455ff12,
+                0 25px 80px #0008,
+                inset 0 1px 0 #ffffff12;
+            backdrop-filter: blur(24px);
+            animation: appear .8s cubic-bezier(.2, .8, .2, 1) both;
+        }
+
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 15%;
+            width: 70%;
+            height: 2px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                var(--cyan),
+                var(--purple),
+                transparent
+            );
+            box-shadow: 0 0 18px var(--cyan);
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(24px) scale(.97);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* 标题区域 */
+        .logo {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 22px;
+            display: grid;
+            place-items: center;
+            border: 1px solid #00f5ff55;
+            border-radius: 20px;
+            color: var(--cyan);
+            font-size: 30px;
+            background: linear-gradient(135deg, #00f5ff18, #9b5cff20);
+            box-shadow:
+                0 0 28px #00f5ff16,
+                inset 0 0 20px #00f5ff0c;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 27px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            margin-top: 10px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .english {
+            margin-top: 8px;
+            text-align: center;
+            color: #66769e;
+            font: 11px "Orbitron", sans-serif;
+            letter-spacing: 3px;
+        }
+
+        .divider {
+            height: 1px;
+            margin: 28px 0;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                #8b9bdb35,
+                transparent
+            );
+        }
+
+        /* 表单 */
+        form,
+        .field,
+        .input-wrap {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 10px;
+            color: #d8e1ff;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .field label span {
+            margin-right: 8px;
+            color: var(--cyan);
+        }
+
+        .input-wrap input {
+            display: block;
+            width: 100%;
+            min-width: 0;
+            height: 52px;
+            padding: 0 15px;
+            outline: none;
+            border: 1px solid #7384b52e;
+            border-radius: 12px;
+            color: #fff;
+            background: #080d20a8;
+            font-family: inherit;
+            font-size: 14px;
+            transition:
+                border-color .25s,
+                box-shadow .25s,
+                background .25s;
+        }
+
+        .input-wrap input::placeholder {
+            color: #66718f;
+        }
+
+        .input-wrap input:hover {
+            border-color: #8195cc70;
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--cyan);
+            background: #0b1428;
+            box-shadow:
+                0 0 0 3px #00f5ff12,
+                0 0 22px #00f5ff0b;
+        }
+
+        /* 提交按钮 */
+        .submit-btn {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            min-width: 0;
+            min-height: 52px;
+            margin-top: 28px;
+            overflow: hidden;
+            border: 0;
+            border-radius: 12px;
+            color: #07101b;
+            background: linear-gradient(
+                100deg,
+                #00f5ff,
+                #64c9ff 50%,
+                #b18aff
+            );
+            box-shadow: 0 5px 25px #00d9ff27;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            transition: transform .25s, box-shadow .25s;
+        }
+
+        .submit-btn::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -80%;
+            width: 45%;
+            height: 200%;
+            transform: rotate(25deg);
+            background: #ffffff70;
+            transition: left .6s;
+            pointer-events: none;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 35px #00d9ff45;
+        }
+
+        .submit-btn:hover::before {
+            left: 140%;
+        }
+
+        .submit-btn:active {
+            transform: scale(.98);
+        }
+
+        .submit-btn:disabled {
+            cursor: wait;
+            opacity: .75;
+        }
+
+        .arrow {
+            font-size: 20px;
+            transition: transform .25s;
+        }
+
+        .submit-btn:hover .arrow {
+            transform: translateX(5px);
+        }
+
+        /* 底部状态 */
+        .status-wrap {
+            text-align: center;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 18px;
+            padding: 7px 12px;
+            border: 1px solid #39e6a51e;
+            border-radius: 30px;
+            color: #7aeac0;
+            background: #39e6a508;
+            font-size: 11px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #47f5b1;
+            box-shadow: 0 0 9px #47f5b1;
+            animation: blink 1.8s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: .35;
+            }
+        }
+
+        .footer {
+            margin-top: 25px;
+            text-align: center;
+            color: #647092;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        /* 平板 */
+        @media (min-width: 600px) {
+            .container {
+                max-width: 460px;
+            }
+        }
+
+        /* 手机 */
+        @media (max-width: 599px) {
+            body {
+                padding: 20px 16px;
+            }
+
+            .container {
+                max-width: 440px;
+                border-radius: 20px;
+            }
+
+            .title {
+                font-size: clamp(22px, 6vw, 27px);
+            }
+
+            .subtitle {
+                font-size: 13px;
+            }
+
+            .input-wrap input {
+                min-height: 48px;
+                font-size: 16px;
+                padding: 0 12px;
+            }
+
+            .submit-btn {
+                min-height: 50px;
+            }
+
+            .orb {
+                width: 65vw;
+                height: 65vw;
+            }
+        }
+
+        /* 小屏手机 */
+        @media (max-width: 360px) {
+            body {
+                padding: 12px;
+            }
+
+            .container {
+                padding: 26px 16px 20px;
+            }
+
+            .english {
+                font-size: 9px;
+                letter-spacing: 2px;
+            }
+
+            .divider {
+                margin: 22px 0;
+            }
+
+            .field {
+                margin-bottom: 16px;
+            }
+        }
+
+        /* 手机横屏 */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                align-items: flex-start;
+                padding-top: 16px;
+                padding-bottom: 16px;
+            }
+
+            .container {
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+
+            .logo {
+                width: 42px;
+                height: 42px;
+                margin-bottom: 12px;
+                font-size: 22px;
+                border-radius: 13px;
+            }
+
+            .divider {
+                margin: 16px 0;
+            }
+
+            .field {
+                margin-bottom: 12px;
+            }
+
+            .footer {
+                margin-top: 14px;
+            }
+        }
+
+        /* 减少动态效果的辅助功能设置 */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="orb orb-cyan"></div>
+    <div class="orb orb-purple"></div>
+
+    <main class="container">
+        <div class="logo" aria-hidden="true">✧</div>
+
+        <h1 class="title">云端资源提交</h1>
+        <p class="subtitle">填写分享信息与目标提取码，开始提交任务</p>
+        <p class="english">CLOUD RESOURCE HUB</p>
+
+        <div class="divider"></div>
+
+        <form action="/apply" method="post" id="applyForm">
+            <!-- 用户希望设置的提取码 -->
+            <div class="field">
+                <label for="to_extract_code">
+                    <span>◈</span>用户提取码
+                </label>
+
+                <div class="input-wrap">
+                    <input
+                        type="text"
+                        id="to_extract_code"
+                        name="to_extract_code"
+                        placeholder="请输入希望设置的提取码"
+                        autocomplete="off"
+                        maxlength="32"
+                    >
+                </div>
+            </div>
+
+            <!-- 提交按钮 -->
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <span id="btnText">获取下载链接</span>
+                <span class="arrow" aria-hidden="true">↗</span>
+            </button>
+        </form>
+
+        <div class="status-wrap">
+            <div class="status">
+                <span class="status-dot"></span>
+                READY TO CONNECT
+            </div>
+        </div>
+
+        <p class="footer">
+            SECURE INTERFACE · CLOUD RESOURCE SYSTEM<br>
+            请确认信息正确后再提交
+        </p>
+    </main>
+
+    <script>
+        const form = document.getElementById('applyForm');
+        const button = document.getElementById('submitBtn');
+        const buttonText = document.getElementById('btnText');
+
+        form.addEventListener('submit', function () {
+            // 表单原生校验通过后，显示提交状态
+            button.disabled = true;
+            buttonText.textContent = '正在提交...';
+        });
+    </script>
+</body>
+</html>

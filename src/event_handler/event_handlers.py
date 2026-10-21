@@ -18,13 +18,12 @@ def register_handler(func):
 
 @register_handler
 def transfer_event_handler(event_bus, transfer_event) -> bool:
+    path = "/apps/autotool/mydir/" + transfer_event.to_extract_code + "/"
     if transfer_event.name == "TransferEvent":
-        transfer_share_link.transfer(
-            folder_name="/apps/autotool/mydir/",
-            links=transfer_event.share_link,
-            password=transfer_event.password,
-        )
-        # event_bus.raise_event(ReturnLinksEvent())
+        if transfer_share_link.transfer(folder_name=path,links=transfer_event.share_link,password=transfer_event.password,):
+            event_bus.raise_event(ReturnLinksEvent(path, transfer_event.to_extract_code))
+        else:
+            return False
         return True
     else:
         return False

@@ -11,12 +11,26 @@ def index():
         share_link = request.form.get("share_link")
         share_password = request.form.get("share_password")
         to_extract_code = request.form.get("to_extract_code")
-        print(share_link, share_password)
 
         new_event = event.TransferEvent(share_link, share_password)
         event_bus.raise_event(new_event)
 
     return render_template("apply.html")
+
+
+@app.route("/download", methods=["GET", "POST"])
+def download():
+    if request.method == "POST":
+        to_extract_code = request.form.get("to_extract_code")
+        with open("user_links/" + to_extract_code + ".txt", "wb") as f:
+            to_extract_code = f.read()
+
+        if to_extract_code == "":
+            return "提取码不存在"
+        else:
+            return to_extract_code
+
+    return render_template("download.html")
 
 app.run(debug=True)
 

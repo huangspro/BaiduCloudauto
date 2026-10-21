@@ -32,7 +32,7 @@ class Operations:
              on_status: Optional[Callable] = None,
              on_log: Optional[Callable] = None,
              on_pause: Optional[Callable] = None,
-             running: bool = True) -> None:
+             running: bool = True) -> bool:
         """
         转存主函数，流程为：
         1.获取用户输入，更新按钮和标签状态；
@@ -53,6 +53,7 @@ class Operations:
         finally:
             self.network.s.close()
             self.change_status('stopped', on_status)
+        return True
 
     def share(self, cookie: str, folder_name: str, trust_env: bool,
               expiry: int, password: str, random_password: bool,
