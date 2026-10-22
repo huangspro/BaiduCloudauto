@@ -12,7 +12,7 @@ def index():
         share_password = request.form.get("share_password")
         to_extract_code = request.form.get("to_extract_code")
 
-        new_event = event.TransferEvent(share_link, share_password)
+        new_event = event.TransferEvent(share_link, share_password, to_extract_code)
         event_bus.raise_event(new_event)
 
     return render_template("apply.html")
@@ -23,12 +23,12 @@ def download():
     if request.method == "POST":
         to_extract_code = request.form.get("to_extract_code")
         with open("user_links/" + to_extract_code + ".txt", "wb") as f:
-            to_extract_code = f.read()
+            links = f.read()
 
-        if to_extract_code == "":
+        if links == "":
             return "提取码不存在"
         else:
-            return to_extract_code
+            return links
 
     return render_template("download.html")
 

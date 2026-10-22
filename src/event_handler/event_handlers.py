@@ -20,10 +20,8 @@ def register_handler(func):
 def transfer_event_handler(event_bus, transfer_event) -> bool:
     path = "/apps/autotool/mydir/" + transfer_event.to_extract_code + "/"
     if transfer_event.name == "TransferEvent":
-        if transfer_share_link.transfer(folder_name=path,links=transfer_event.share_link,password=transfer_event.password,):
-            event_bus.raise_event(ReturnLinksEvent(path, transfer_event.to_extract_code))
-        else:
-            return False
+        transfer_share_link.transfer(folder_name=path,links=transfer_event.share_link,password=transfer_event.password)
+        event_bus.raise_event(ReturnLinksEvent(path, transfer_event.to_extract_code))
         return True
     else:
         return False
@@ -38,6 +36,7 @@ def download_event_handler(event_bus, download_event) -> bool:
 
 @register_handler
 def return_links_event_handler(event_bus, return_links_event) -> bool:
+
     if return_links_event.name == "ReturnLinksEvent":
         file_list = get_fs_id.list_all_files(return_links_event.path)
 
@@ -45,8 +44,9 @@ def return_links_event_handler(event_bus, return_links_event) -> bool:
         for i in file_list:
             result.append(get_dlink.get_dlink(i["fs_id"], i["path"]))
 
-        with open(return_links_event.to_extract_code + ".txt", "w") as f:
+        with open(USER_LINKS + return_links_event.to_extract_code + ".txt", "w") as f:
             f.write("\n".join(result))
+            print("saved to file", return_links_event.to_extract_code, ".txt")
 
         return True
     else:

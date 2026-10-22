@@ -50,6 +50,7 @@ class Operations:
             self.handle_process_save(on_status, on_log, on_pause, running)
         except Exception as e:
             self.insert_logs(on_log, f'程序出现未预料错误，信息如下：\n{e}\n{traceback.format_exc()}')
+            return False
         finally:
             self.network.s.close()
             self.change_status('stopped', on_status)
