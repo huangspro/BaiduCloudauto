@@ -5,9 +5,11 @@ class EventBus:
     def __init__(self):
         self.event_list = []
 
+
     def raise_event(self, event):
         self.event_list.append(event)
-        self.handle_event()
+        if len(self.event_list) == 0:
+            self.handle_event()
 
     def handle_event(self):
         while len(self.event_list) > 0:
