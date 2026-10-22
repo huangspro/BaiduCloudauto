@@ -22,3 +22,8 @@ class ReturnLinksEvent(Event):
         super().__init__("ReturnLinksEvent")
         self.path = path
         self.to_extract_code = to_extract_code
+
+# This event is to delete expired information such as expired cloud disk files and local users files.
+class ExpiredInfoEvent(Event):
+    def __init__(self):
+        super().__init__("ExpiredInfoEvent")
