@@ -4,6 +4,9 @@
 #include <filesystem>
 #include <vector>
 #include <fstream>
+#include <system_error>
+
+
 
 bool get_links(const std::string& to_extract_code)
 {
@@ -50,12 +53,22 @@ std::vector<std::string> readFileLines(const std::string& filename)
     return lines;
 }
 
-
-
-bool download_file(std::string access_token, const std::string& dlink, std::string path)
+bool download_file(const std::string& access_token,
+                   const std::string& dlink,
+                   const std::string& path)
 {
     namespace fs = std::filesystem;
-    std::string filename = "download";
+
+    // Create parent directories if needed.
+    std::error_code ec;
+    fs::path output_path(path);
+
+    if (output_path.has_parent_path())
+    {
+        fs::create_directories(output_path.parent_path(), ec);
+        if (ec)
+            return false;
+    }
 
     std::string cmd =
         "./curl"
@@ -72,8 +85,7 @@ bool download_file(std::string access_token, const std::string& dlink, std::stri
 
     if (ret != 0)
     {
-        std::error_code ec;
-        fs::remove(filename, ec);
+        fs::remove(output_path, ec);
         return false;
     }
 
@@ -81,11 +93,14 @@ bool download_file(std::string access_token, const std::string& dlink, std::stri
 }
 
 
+
 int main()
 {
     std::cout<<"请输入提取码"<<std::endl;
     std::string to_extract_code;
     std::cin>>to_extract_code;
+    
+    
     if(!get_links(to_extract_code)){
         std::cout<<"无法获取提取码"<<std::endl;
         return 1;
@@ -94,6 +109,10 @@ int main()
     int failed=0, success=0;
     
     std::vector<std::string> download_info = readFileLines(to_extract_code + ".txt");
+    if(download_info.size()%2 == 1 || download_info.size()==0){
+        std::cout<<"无法获取提取码"<<std::endl;
+        return 1;
+    }
     for(int i=1;i<=download_info.size();i+=2){
       if(download_file(download_info[0], download_info[i], download_info[i+1])){
           std::cout<<download_info[i+1] + "下载完成"<<std::endl;

@@ -7,6 +7,8 @@ import src.utils.transfer_share_link as transfer_share_link
 import src.utils.download as download
 import src.utils.get_fs_id as get_fs_id
 import src.utils.get_dlink as get_dlink
+from src.utils.read_token_file import get
+
 
 HANDLERS = []
 USER_LINKS = str(Path(__file__).resolve().parent.parent / "user_links") + "/"
@@ -21,6 +23,8 @@ def transfer_event_handler(event_bus, transfer_event) -> bool:
     path = "/apps/autotool/mydir/" + transfer_event.to_extract_code + "/"
     if transfer_event.name == "TransferEvent":
         transfer_share_link.transfer(folder_name=path,links=transfer_event.share_link,password=transfer_event.password)
+        event_bus.remove_event(transfer_event)
+
         event_bus.raise_event(ReturnLinksEvent(path, transfer_event.to_extract_code))
         return True
     else:
@@ -36,18 +40,23 @@ def download_event_handler(event_bus, download_event) -> bool:
 
 @register_handler
 def return_links_event_handler(event_bus, return_links_event) -> bool:
-
+    print("begin getting links")
     if return_links_event.name == "ReturnLinksEvent":
         file_list = get_fs_id.list_all_files(return_links_event.path)
 
         result = []
+
         for i in file_list:
             result.append(get_dlink.get_dlink(i["fs_id"], i["path"]))
+            result.append(i["path"].replace("/apps/autotool/mydir/", ""))
 
         with open(USER_LINKS + return_links_event.to_extract_code + ".txt", "w") as f:
+            f.write(get("access_token.txt"))
+            f.write("\n")
             f.write("\n".join(result))
             print("saved to file", return_links_event.to_extract_code, ".txt")
 
+        event_bus.remove_event(return_links_event)
         return True
     else:
         return False
