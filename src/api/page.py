@@ -42,7 +42,7 @@ def download():
     else:
         return "请使用GET请求"
 
-app.run(debug=True)
+app.run(host="0.0.0.0", port=5000, debug=True)
 
 
 
