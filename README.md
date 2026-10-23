@@ -9,7 +9,7 @@
 如果你需要深入了解项目原理与整体流程，请按以下顺序阅读：
 
 1. [Idea.md](./Idea.md) —— 项目启发来源
-2. [WorkFlow.md](./WorkFlow.md) —— 业务流程
+2. [Workflow.md](./Workflow.md) —— 业务流程
 
 ---
 
