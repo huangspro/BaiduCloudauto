@@ -32,9 +32,7 @@
 │   │   ├── operations.py
 │   │   └── utils.py
 │   ├── user_links
-│   │   └── 1234.txt
 │   └── utils
-│       ├── access_token.txt
 │       ├── delete_file.py
 │       ├── download.py
 │       ├── get_access_token.py
@@ -47,5 +45,5 @@
 │       └── transfer_share_link.py
 └── Workflow.md
 
-12 directories, 35 files
+12 directories, 33 files
 ```
