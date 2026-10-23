@@ -8,10 +8,10 @@
 
 
 
-bool get_links(const std::string& to_extract_code)
+bool get_links(const std::string& host, const std::string& to_extract_code)
 {
     std::string cmd =
-        R"(./curl -sS -X POST "http://127.0.0.1:5000/download" )"
+        "./curl -sS -X POST \"" + host + "/download\" "
         + std::string(R"(-d "to_extract_code=)")
         + to_extract_code
         + R"(" -H "Content-Type: application/x-www-form-urlencoded" )"
@@ -96,12 +96,17 @@ bool download_file(const std::string& access_token,
 
 int main()
 {
+    std::string host;
+    std::cout<<"请输入服务器host（例如 http://127.0.0.1:5000）"<<std::endl;
+    std::getline(std::cin, host);
+    while (!host.empty() && host.back() == '/') host.pop_back();
+
     std::cout<<"请输入提取码"<<std::endl;
     std::string to_extract_code;
     std::cin>>to_extract_code;
-    
-    
-    if(!get_links(to_extract_code)){
+
+
+    if(!get_links(host, to_extract_code)){
         std::cout<<"无法获取提取码"<<std::endl;
         return 1;
     }
@@ -113,7 +118,7 @@ int main()
         std::cout<<"无法获取提取码"<<std::endl;
         return 1;
     }
-    for(int i=1;i<=download_info.size();i+=2){
+    for(int i=1;i<=download_info.size()-2;i+=2){
       if(download_file(download_info[0], download_info[i], download_info[i+1])){
           std::cout<<download_info[i+1] + "下载完成"<<std::endl;
           success++;
