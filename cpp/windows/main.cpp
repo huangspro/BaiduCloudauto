@@ -101,7 +101,9 @@ int main()
     std::cout<<u8"请输入服务器host（例如 http://127.0.0.1:5000）"<<std::endl;
     std::getline(std::cin, host);
     while (!host.empty() && host.back() == '/') host.pop_back();
-
+    std::cout<<"请浏览器访问: "<<host<<"/apply "<<"，提交分享链接和自定义提取码，等待分享链接处理完成后，再进行下一步"<<std::endl;
+    
+    std::cout<<"请输入提取码，注意如果分享链接还没有处理完成，下一步将失败"<<std::endl;
     std::cout<<u8"请输入提取码"<<std::endl;
     std::string to_extract_code;
     std::cin>>to_extract_code;
