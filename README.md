@@ -17,4 +17,6 @@
 
 如果你只需要快速部署，请直接阅读：
 
-* [Implement.md](./Implement.md) —— 快速部署
+1. [Idea.md](./Idea.md) —— 了解功能与原理
+
+2. [Implement.md](./Implement.md) —— 快速开始
