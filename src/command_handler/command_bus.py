@@ -18,7 +18,6 @@ class CommandBus:
 
     def handle_command(self):
         while True:
-
             try:
                 command = self.command_queue.get()
                 if command is None: # when a command is None, the thread will be ended

@@ -2,7 +2,6 @@ import os
 from flask import Flask, render_template, request
 from src.command_handler import command
 from src.command_handler.command_bus import command_bus
-from src.event_handler.message_bus import message_bus
 
 from pathlib import Path
 
@@ -14,11 +13,13 @@ USER_LINKS = str(Path(__file__).resolve().parent.parent / "user_links") + "/"
 @app.route("/apply", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
+        # get data from html page
         share_link = request.form.get("share_link")
         share_password = request.form.get("share_password")
         to_extract_code = request.form.get("to_extract_code")
         email = request.form.get("email")
 
+        # send command to command bus, start transferring
         new_command = command.TransferCommand(share_link, share_password, to_extract_code, email)
         command_bus.raise_command(new_command)
 

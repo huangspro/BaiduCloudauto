@@ -1,20 +1,35 @@
+import queue
+import threading
+
+
 class MessageBus:
     def __init__(self):
+        self.event_queue = queue.Queue()  # storing all events, their handlers are in HANDLERS
+        self.worker = threading.Thread(target=self.handle_events, name="EventBusWorker", daemon=True)
         self.events = {}  # storing {event_name1:[subscriber1, subscriber2, subscriber3, ...], ...}
+        self.worker.start()
 
+    # subscribe event to message bus
     def subscribe(self, event_name, handler):
-        print("subscribing ", event_name)
         if event_name not in self.events.keys():
             self.events[event_name] = []
 
         self.events[event_name].append(handler)
 
-    def post(self, event_name, data):
-        print("posting ", event_name)
-        if event_name in self.events.keys():
-            print("test")
-            for subscriber in self.events[event_name]:
-                subscriber(event_name, data)
+    # add an event to event queue
+    def post(self, event):
+        self.event_queue.put(event)
 
+    # running in a sub thread, broadcast events to all subscribers
+    def handle_events(self):
+        while True:
+            event = self.event_queue.get()
+
+            if event is None:
+                return
+
+            if event.name in self.events.keys():
+                for subscriber in self.events[event.name]:
+                    subscriber(event.data)
 
 message_bus = MessageBus()
