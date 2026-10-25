@@ -259,6 +259,33 @@
                 0 0 22px #00f5ff0b;
         }
 
+        /* 表单提交反馈 */
+        .form-message {
+            margin-top: 18px;
+            padding: 13px 15px;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        .form-message[hidden] {
+            display: none;
+        }
+
+        .form-message.success {
+            color: #7aeac0;
+            border-color: #39e6a54d;
+            background: #39e6a512;
+        }
+
+        .form-message.error {
+            color: #ff9baf;
+            border-color: #ff6b8a55;
+            background: #ff6b8a12;
+        }
+
         /* 提交按钮 */
         .submit-btn {
             position: relative;
@@ -549,12 +576,31 @@
                 </div>
             </div>
 
+            <!-- 用户希望设置的邮箱 -->
+            <div class="field">
+                <label for="to_extract_code">
+                    <span>◈</span>邮箱
+                </label>
+
+                <div class="input-wrap">
+                    <input
+                        type="text"
+                        id="email"
+                        name="email"
+                        placeholder="请输入用于接收转存任务完成消息的邮箱"
+                        maxlength="100"
+                    >
+                </div>
+            </div>
+
             <!-- 提交按钮 -->
             <button type="submit" class="submit-btn" id="submitBtn">
                 <span id="btnText">提交任务</span>
                 <span class="arrow" aria-hidden="true">↗</span>
             </button>
         </form>
+
+        <div id="formMessage" class="form-message" role="status" aria-live="polite" hidden></div>
 
         <div class="status-wrap">
             <div class="status">
@@ -573,11 +619,48 @@
         const form = document.getElementById('applyForm');
         const button = document.getElementById('submitBtn');
         const buttonText = document.getElementById('btnText');
+        const email = document.getElementById('email');
 
-        form.addEventListener('submit', function () {
-            // 表单原生校验通过后，显示提交状态
+        const formMessage = document.getElementById('formMessage');
+
+        form.addEventListener('submit', async function (event) {
+            // 先执行浏览器原生表单校验；校验通过后才会触发此事件
+            event.preventDefault();
+
             button.disabled = true;
             buttonText.textContent = '正在提交...';
+            formMessage.hidden = true;
+            formMessage.className = 'form-message';
+            formMessage.textContent = '';
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method || 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                });
+
+                if (!response.ok) {
+                    throw new Error('服务器返回错误状态：' + response.status);
+                }
+
+                // show successful message
+                formMessage.textContent = '提交成功！服务器已接收您的任务。';
+                formMessage.classList.add('success');
+                formMessage.hidden = false;
+                buttonText.textContent = '提交成功';
+                form.reset();
+            } catch (error) {
+                console.error('表单提交失败：', error);
+                formMessage.textContent = '提交失败，请检查网络连接后重试。';
+                formMessage.classList.add('error');
+                formMessage.hidden = false;
+                button.disabled = false;
+                buttonText.textContent = '重新提交';
+            }
         });
     </script>
 </body>

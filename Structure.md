@@ -16,6 +16,7 @@
 │   ├── step1.png
 │   └── step2.png
 ├── Implement.md
+├── LICENSE
 ├── src
 │   ├── api
 │   │   ├── config.ini
@@ -27,7 +28,6 @@
 │   │   ├── command_handlers.py
 │   │   └── command.py
 │   ├── event_handler
-│   │   ├── event.py
 │   │   ├── event_subscriber.py
 │   │   └── message_bus.py
 │   ├── token
@@ -44,6 +44,7 @@
 │   │   ├── operations.py
 │   │   └── utils.py
 │   ├── user_links
+│   │   └── 1234.txt
 │   └── utils
 │       ├── delete_file.py
 │       ├── download.py
@@ -56,5 +57,5 @@
 │       └── transfer_share_link.py
 └── Workflow.md
 
-14 directories, 42 files
+14 directories, 43 files
 ```

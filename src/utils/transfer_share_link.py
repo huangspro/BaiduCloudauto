@@ -1,9 +1,9 @@
-from src.transfer.operations import Operations
+from src.transfer.operations import Operation
 from src.utils.read_token_file import get
 from pathlib import Path
 
 def transfer(folder_name:str = "/", links:str = "", password:str = ""):
-    Operations().save(
+    return Operation().save(
         cookie=get("cookie.txt"),
         folder_name=folder_name,
         trust_env=True,

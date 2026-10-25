@@ -24,8 +24,9 @@ class CommandBus:
                 if command is None: # when a command is None, the thread will be ended
                     return
                 for handler in HANDLERS:
-                    if handler(self, command):
-                        print("handled command", command.name)
+                    handler(self, command)
+
             except Exception as e:
                 print(f"Error handling command: {e}")
 
+command_bus = CommandBus()

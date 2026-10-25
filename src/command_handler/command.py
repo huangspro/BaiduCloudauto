@@ -6,11 +6,12 @@ class Command(ABC):
 
 
 class TransferCommand(Command):
-    def __init__(self, share_link, password, to_extract_code):
+    def __init__(self, share_link, password, to_extract_code, email):
         super().__init__("TransferCommand")
         self.share_link = share_link
         self.password = password
         self.to_extract_code = to_extract_code
+        self.email = email
 
 class DownloadCommand(Command):
     def __init__(self, file_name):

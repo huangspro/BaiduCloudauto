@@ -12,3 +12,5 @@ class MessageBus:
         if event_name in self.events.keys():
             for subscriber in self.events[event_name]:
                 subscriber(event_name, data)
+
+message_bus = MessageBus()
