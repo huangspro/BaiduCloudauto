@@ -1,25 +1,31 @@
+import queue
+import threading
+
 from src.command_handler.command_handlers import HANDLERS
 
 
 class CommandBus:
     def __init__(self):
-        self.command_list = []
-        self.running = False
+        self.command_queue = queue.Queue()  # storing all commands, their handlers are in HANDLERS
+        self.worker = threading.Thread(target=self.handle_command,name="CommandBusWorker",daemon=True)
+        self.worker.start()
 
     def raise_command(self, command):
-        self.command_list.append(command)
-        if not self.running:
-            self.handle_command()
+        self.command_queue.put(command)
+
+    def end_command_handler(self):
+        self.raise_command(None)
 
     def handle_command(self):
-        while len(self.command_list) > 0:
-            self.running = True
-            for command in self.command_list:
+        while True:
+
+            try:
+                command = self.command_queue.get()
+                if command is None: # when a command is None, the thread will be ended
+                    return
                 for handler in HANDLERS:
                     if handler(self, command):
                         print("handled command", command.name)
+            except Exception as e:
+                print(f"Error handling command: {e}")
 
-        self.running = False
-
-    def remove_command(self, command):
-        self.command_list.remove(command)
