@@ -4,14 +4,15 @@
 
 ## 项目结构
 
-关于项目的目录结构，可以查看 [Structure.md](./Structure.md)。本项目遵循 EDD (Event driven development) (事件驱动开发) 设计模式。
+关于项目的目录结构，可以查看 [Structure.md](./Structure.md)。本项目遵循 EDD (Event driven development) (命令驱动开发) 设计模式。
 
 ### 服务端
 使用 python 开发，
 * `utils/` 中包含所有百度网盘 API 的调用，完成授权，获取链接，下载等等。
 * `transfer/` 中是别人的项目 (具体来源可见 [transfer/README.md](./src/transfer/README.md))，用于自动转存分享链接中的文件。
+* `command_handler/` 中定义了各种命令 (command)，以及每种命令对应的命令处理器 (command_handler)，并且定义了一个命令巴士 (`command_bus`)，用于接受命令和将命令分配到对应的处理器。
 * `event_handler/` 中定义了各种事件 (event)，以及每种事件对应的事件处理器 (event_handler)，并且定义了一个事件巴士 (`event_bus`)，用于接受事件和将事件分配到对应的处理器。
-* `api/` 中定义了一个 http 服务器，用于接受客户端中发送的分享链接，同时激发事件进行各种转存，提取链接操作。
+* `api/` 中定义了一个 http 服务器，用于接受客户端中发送的分享链接，同时激发命令进行各种转存，提取链接操作。
 * `token/` 中保存了各种所需的 `AppKey`, `access_token`, `cookie` 等等凭证。
 * `user_links/` 中保存了每个用户提取码对应的 txt 文件，每个文件中保存了分享链接中的所有文件，文件路径以及一个 `access_token`。
 
