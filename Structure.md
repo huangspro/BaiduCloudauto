@@ -43,8 +43,6 @@
 │   │   ├── operations.py
 │   │   └── utils.py
 │   ├── user_links
-│   │   ├── bhj.txt
-│   │   └── hhhy.txt
 │   └── utils
 │       ├── delete_file.py
 │       ├── download.py
@@ -58,5 +56,5 @@
 │       └── transfer_share_link.py
 └── Workflow.md
 
-14 directories, 44 files
+14 directories, 42 files
 ```
