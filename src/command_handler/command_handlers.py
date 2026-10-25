@@ -32,6 +32,7 @@ def transfer_command_handler(command_bus, transfer_command):
             command_bus.raise_command(ReturnLinksCommand(path, transfer_command.to_extract_code))
         else:
             print("transfer failed")
+            print(message_bus.events)
             message_bus.post("TRANSFER_FAILED", data="文件转存失败")
         print("handled ", transfer_command.name)
 

@@ -28,7 +28,6 @@
 │   │   ├── command_handlers.py
 │   │   └── command.py
 │   ├── event_handler
-│   │   ├── event_subscriber.py
 │   │   └── message_bus.py
 │   ├── token
 │   │   ├── access_token.txt
@@ -44,7 +43,8 @@
 │   │   ├── operations.py
 │   │   └── utils.py
 │   ├── user_links
-│   │   └── 1234.txt
+│   │   ├── bhj.txt
+│   │   └── hhhy.txt
 │   └── utils
 │       ├── delete_file.py
 │       ├── download.py
@@ -54,8 +54,9 @@
 │       ├── get_user_id.py
 │       ├── read_token_file.py
 │       ├── refresh_access_token.py
+│       ├── send_email.py
 │       └── transfer_share_link.py
 └── Workflow.md
 
-14 directories, 43 files
+14 directories, 44 files
 ```

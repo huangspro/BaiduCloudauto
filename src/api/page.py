@@ -2,6 +2,7 @@ import os
 from flask import Flask, render_template, request
 from src.command_handler import command
 from src.command_handler.command_bus import command_bus
+from src.event_handler.message_bus import message_bus
 
 from pathlib import Path
 

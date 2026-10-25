@@ -5,11 +5,19 @@ from typing import Union, List, Dict, Any, Callable, Optional
 
 from src.transfer.constants import EXP_MAP, DELAY_SECONDS, INVALID_CHARS, ERROR_CODES, SAVE_LIMIT, COLOR_MAP
 from src.transfer.network import Network
-from src.transfer.utils import write_config, parse_response, normalize_link, parse_url_and_code, update_cookie, generate_code
+from src.transfer.utils import write_config, parse_response, normalize_link, parse_url_and_code, update_cookie
 
 
 class Operation:
     def __init__(self, root=None):
+        self.link_list_org = None
+        self.check_mode = None
+        self.folder_name = None
+        self.custom_mode = None
+        self.cookie = None
+        self.total_task_count = None
+        self.completed_task_count = None
+        self.link_list = None
         self.root = root
         self.network = Network()
 
@@ -161,6 +169,7 @@ class Operation:
         # 跳过非网盘链接
         if 'https://pan.baidu.com/' not in url_code:
             self.insert_logs(on_log, f'不支持的链接：{url_code}')
+            return False
         else:
             # 执行转存过程，通过简单的循环判断是否要暂停
             if not self.pause_detection(url_code, on_log, on_pause, running):
