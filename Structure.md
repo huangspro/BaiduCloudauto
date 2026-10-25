@@ -8,16 +8,28 @@
 │   └── windows
 │       └── main.cpp
 ├── Idea.md
+├── imgs
+│   ├── authorization.png
+│   ├── host.png
+│   ├── page.png
+│   ├── run.png
+│   ├── step1.png
+│   └── step2.png
+├── Implement.md
 ├── src
 │   ├── api
 │   │   ├── config.ini
 │   │   ├── html
 │   │   │   └── apply.html
 │   │   └── page.py
+│   ├── command_handler
+│   │   ├── command_bus.py
+│   │   ├── command_handlers.py
+│   │   └── command.py
 │   ├── event_handler
-│   │   ├── event_bus.py
-│   │   ├── event_handlers.py
-│   │   └── event.py
+│   │   ├── event.py
+│   │   ├── event_subscriber.py
+│   │   └── message_bus.py
 │   ├── token
 │   │   ├── access_token.txt
 │   │   ├── appid.txt
@@ -32,6 +44,7 @@
 │   │   ├── operations.py
 │   │   └── utils.py
 │   ├── user_links
+│   │   └── dgd.txt
 │   └── utils
 │       ├── delete_file.py
 │       ├── download.py
@@ -41,9 +54,8 @@
 │       ├── get_user_id.py
 │       ├── read_token_file.py
 │       ├── refresh_access_token.py
-│       ├── refresh_token.txt
 │       └── transfer_share_link.py
 └── Workflow.md
 
-12 directories, 33 files
+14 directories, 43 files
 ```

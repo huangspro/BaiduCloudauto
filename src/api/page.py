@@ -2,14 +2,14 @@ import os
 
 from flask import Flask, render_template, request
 from src.utils import *
-from src.event_handler import event_bus, event
+from src.command_handler import command_bus, command
 
 import sys
 from pathlib import Path
 from src.utils.read_token_file import get
 
 app = Flask(__name__,  template_folder="html")
-event_bus = event_bus.EventBus()
+command_bus = command_bus.CommandBus()
 USER_LINKS = str(Path(__file__).resolve().parent.parent / "user_links") + "/"
 
 
@@ -20,8 +20,8 @@ def index():
         share_password = request.form.get("share_password")
         to_extract_code = request.form.get("to_extract_code")
 
-        new_event = event.TransferEvent(share_link, share_password, to_extract_code)
-        event_bus.raise_event(new_event)
+        new_command = command.TransferCommand(share_link, share_password, to_extract_code)
+        command_bus.raise_command(new_command)
 
     return render_template("apply.html")
 

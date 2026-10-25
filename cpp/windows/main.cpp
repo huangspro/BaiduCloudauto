@@ -117,8 +117,8 @@ int main()
     int failed=0, success=0;
     
     std::vector<std::string> download_info = readFileLines(to_extract_code + ".txt");
-    if(download_info.size()%2 == 1 || download_info.size()==0){
-        std::cout<<u8"无法获取提取码"<<std::endl;
+    if(download_info.size()%2 == 0 || download_info.size()==0){
+        std::cout<<u8"提取码有错误"<<std::endl;
         return 1;
     }
     for(int i=1;i<=download_info.size()-2;i+=2){
