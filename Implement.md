@@ -30,8 +30,13 @@ https://openapi.baidu.com/oauth/2.0/authorize?response_type=code&client_id=您�
 ```
 ![authorization](imgs/authorization.png)
 8. 运行`utils/get_access_token.py`
+```python
+cd src/utils
+python3 get_access_token.py
+```
 9. 运行`api/page.py`
 ```python
+cd src/api
 python3 page.py
 ```
 ![run](imgs/run.png)
@@ -47,6 +52,7 @@ python3 page.py
 1. 下载`cpp/linux`中的所有内容到本地，除了`main.cpp`
 2. 运行`main`
 ```
+cd cpp/linux
 ./main
 ```
 
