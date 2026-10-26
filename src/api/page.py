@@ -5,8 +5,7 @@ from src.command_handler.command_bus import command_bus
 
 from pathlib import Path
 
-
-app = Flask(__name__,  template_folder="html")
+app = Flask(__name__, template_folder="html")
 USER_LINKS = str(Path(__file__).resolve().parent.parent / "user_links") + "/"
 
 
@@ -21,7 +20,9 @@ def index():
         email = request.form.get("email")
 
         # send command to command bus, start transferring
-        new_command = command.TransferCommand(share_link, share_password, to_extract_code, email)
+        new_command = command.TransferCommand(
+            share_link, share_password, to_extract_code, email
+        )
         command_bus.raise_command(new_command)
 
     return render_template("apply.html")
@@ -44,7 +45,5 @@ def download():
     else:
         return "请使用GET请求"
 
+
 app.run(host="0.0.0.0", port=5000, debug=True)
-
-
-

@@ -3,9 +3,9 @@ get file information of a single on baidu cloud
 get file information of all file from a folder on baidu cloud
 """
 
-
 import requests
 from src.utils.read_token_file import get
+
 
 # list all files and folders in a path, warning: the input path should follow the format "/apps/autotool/mydir/"
 def list_files(path: str) -> list[dict]:
@@ -48,6 +48,7 @@ def list_files(path: str) -> list[dict]:
         for item in data.get("list", [])
     ]
 
+
 # list all files in all folders using dfs
 def list_all_files(path: str) -> list[dict]:
     result = []
@@ -58,4 +59,3 @@ def list_all_files(path: str) -> list[dict]:
         else:
             result.append(i)
     return result
-

@@ -5,6 +5,7 @@
 :contact: https://github.com/hxz393
 :copyright: Copyright 2024, hxz393. 保留所有权利。
 """
+
 import atexit
 import base64
 import os
@@ -45,7 +46,7 @@ def write_config(config: str) -> None:
     :param config: 配置文件内容，以换行转义字符 '\n' 拼接多个配置到一行字符串
     :return: 无返回值
     """
-    with open(CONFIG_PATH, 'w') as f:
+    with open(CONFIG_PATH, "w") as f:
         f.write(config)
 
 
@@ -68,7 +69,7 @@ def create_icon() -> str:
 
     :return: 返回图标文件路径
     """
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as temp_file:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as temp_file:
         temp_file.write(zlib.decompress(base64.b64decode(ICON_BASE64)))
         temp_file.flush()
         ico_path = temp_file.name
@@ -89,13 +90,13 @@ def normalize_link(url_code: str) -> str:
     # 升级旧链接格式
     normalized = url_code.replace("share/init?surl=", "s/1")
     # 替换掉 ?pwd= 或 &pwd= 为空格
-    normalized = re.sub(r'[?&]pwd=', ' ', normalized)
+    normalized = re.sub(r"[?&]pwd=", " ", normalized)
     # 替换掉提取码字样为空格
-    normalized = re.sub(r'提取码*[：:]', ' ', normalized)
+    normalized = re.sub(r"提取码*[：:]", " ", normalized)
     # 替换 http 为 https，顺便处理掉开头没用的文字
-    normalized = re.sub(r'^.*?(https?://)', 'https://', normalized)
+    normalized = re.sub(r"^.*?(https?://)", "https://", normalized)
     # 替换连续的空格
-    normalized = re.sub(r'\s+', ' ', normalized)
+    normalized = re.sub(r"\s+", " ", normalized)
     return normalized
 
 
@@ -107,7 +108,7 @@ def parse_url_and_code(url_code: str) -> Tuple[str, str]:
     :return: 链接和提取码
     """
     # 不会分割失败
-    url, code = map(str.strip, url_code.split(' ', 1))
+    url, code = map(str.strip, url_code.split(" ", 1))
     # 暴力切片，如果输入链接不是以提取码结尾，会得到错误提取码
     return url[:47], code[-4:]
 
@@ -125,10 +126,18 @@ def parse_response(response: str) -> Union[List[str], int]:
     fs_id_list = FS_ID_REGEX.findall(response)
     server_filename_list = SERVER_FILENAME_REGEX.findall(response)
     isdir_list = ISDIR_REGEX.findall(response)
-    if not all([shareid_list, user_id_list, fs_id_list, server_filename_list, isdir_list]):
+    if not all(
+        [shareid_list, user_id_list, fs_id_list, server_filename_list, isdir_list]
+    ):
         return -1
 
-    return [shareid_list[0], user_id_list[0], fs_id_list, list(dict.fromkeys(server_filename_list)), isdir_list]
+    return [
+        shareid_list[0],
+        user_id_list[0],
+        fs_id_list,
+        list(dict.fromkeys(server_filename_list)),
+        isdir_list,
+    ]
 
 
 def update_cookie(bdclnd: str, cookie: str) -> str:
@@ -140,11 +149,13 @@ def update_cookie(bdclnd: str, cookie: str) -> str:
     :return: 返回新 cookie 字符串
     """
     # 拆分 cookie 字符串到字典。先用 ; 分割成列表，再用 = 分割出键和值
-    cookies_dict = dict(map(lambda item: item.split('=', 1), filter(None, cookie.split(';'))))
+    cookies_dict = dict(
+        map(lambda item: item.split("=", 1), filter(None, cookie.split(";")))
+    )
     # 在 cookie 字典中，更新或添加 BDCLND 的值
-    cookies_dict['BDCLND'] = bdclnd
+    cookies_dict["BDCLND"] = bdclnd
     # 从更新后的字典重新构建 cookie 字符串
-    updated_cookie = ';'.join([f'{key}={value}' for key, value in cookies_dict.items()])
+    updated_cookie = ";".join([f"{key}={value}" for key, value in cookies_dict.items()])
 
     return updated_cookie
 
@@ -158,6 +169,6 @@ def generate_code() -> str:
     # 包含大小写字母和数字
     characters = string.ascii_letters + string.digits
     # 随机选择四个字符
-    code = ''.join(random.choice(characters) for _ in range(4))
+    code = "".join(random.choice(characters) for _ in range(4))
 
     return code

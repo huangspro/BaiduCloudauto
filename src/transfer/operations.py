@@ -3,9 +3,22 @@ import time
 import traceback
 from typing import Union, List, Dict, Any, Callable, Optional
 
-from src.transfer.constants import EXP_MAP, DELAY_SECONDS, INVALID_CHARS, ERROR_CODES, SAVE_LIMIT, COLOR_MAP
+from src.transfer.constants import (
+    EXP_MAP,
+    DELAY_SECONDS,
+    INVALID_CHARS,
+    ERROR_CODES,
+    SAVE_LIMIT,
+    COLOR_MAP,
+)
 from src.transfer.network import Network
-from src.transfer.utils import write_config, parse_response, normalize_link, parse_url_and_code, update_cookie
+from src.transfer.utils import (
+    write_config,
+    parse_response,
+    normalize_link,
+    parse_url_and_code,
+    update_cookie,
+)
 
 
 class Operation:
@@ -21,12 +34,19 @@ class Operation:
         self.root = root
         self.network = Network()
 
-    def save(self, cookie: str, folder_name: str, trust_env: bool, custom_mode: bool,
-             check_mode: bool, links: str,
-             on_status: Optional[Callable] = None,
-             on_log: Optional[Callable] = None,
-             on_pause: Optional[Callable] = None,
-             running: bool = True) -> bool:
+    def save(
+        self,
+        cookie: str,
+        folder_name: str,
+        trust_env: bool,
+        custom_mode: bool,
+        check_mode: bool,
+        links: str,
+        on_status: Optional[Callable] = None,
+        on_log: Optional[Callable] = None,
+        on_pause: Optional[Callable] = None,
+        running: bool = True,
+    ) -> bool:
         """执行批量转存；成功返回 True，失败返回 False。"""
         self.prepare_run(cookie, folder_name, trust_env, custom_mode, check_mode)
         self.setup_save(links)
@@ -40,11 +60,18 @@ class Operation:
             return self._finish(False, on_status)
         return self._finish(True, on_status)
 
-    def share(self, cookie: str, folder_name: str, trust_env: bool,
-              expiry: int, password: str, random_password: bool,
-              on_status: Optional[Callable] = None,
-              on_log: Optional[Callable] = None,
-              on_links: Optional[Callable] = None) -> bool:
+    def share(
+        self,
+        cookie: str,
+        folder_name: str,
+        trust_env: bool,
+        expiry: int,
+        password: str,
+        random_password: bool,
+        on_status: Optional[Callable] = None,
+        on_log: Optional[Callable] = None,
+        on_links: Optional[Callable] = None,
+    ) -> bool:
         """执行批量分享；成功返回 True，失败返回 False。"""
         self.prepare_run(cookie, folder_name, trust_env, False, False)
         if not self.handle_input(task_count_check=False):
@@ -61,11 +88,17 @@ class Operation:
     def _finish(self, success: bool, on_status: Optional[Callable] = None) -> bool:
         """统一清理资源并返回最终状态。"""
         self.network.s.close()
-        self.change_status('stopped', on_status)
+        self.change_status("stopped", on_status)
         return success
 
-    def prepare_run(self, cookie: str, folder_name: str, trust_env: bool,
-                    custom_mode: bool, check_mode: bool) -> None:
+    def prepare_run(
+        self,
+        cookie: str,
+        folder_name: str,
+        trust_env: bool,
+        custom_mode: bool,
+        check_mode: bool,
+    ) -> None:
         """获取变量，准备运行。转存和分享共用逻辑"""
         # 从用户输入获取变量
         self.cookie = "".join(cookie.split())
@@ -76,99 +109,125 @@ class Operation:
 
         # 更新 cookie、初始化任务总数、更改状态、写入配置文件
         self.completed_task_count = 0
-        self.network.headers['Cookie'] = self.cookie
-        self.change_status('init')
-        write_config(f'{self.cookie}\n{self.folder_name}')
+        self.network.headers["Cookie"] = self.cookie
+        self.change_status("init")
+        write_config(f"{self.cookie}\n{self.folder_name}")
 
     def setup_save(self, links: str) -> None:
         """准备链接，更新状态"""
         # 从文本链接获取全部链接，清洗并标准化链接。注意链接后拼接一个空格，是为了后面能统一处理带与不带提取码的链接
         raw_links = links.splitlines()
-        self.link_list = [normalize_link(f'{link} ') for link in raw_links if link]
+        self.link_list = [normalize_link(f"{link} ") for link in raw_links if link]
         self.link_list_org = list(dict.fromkeys(link for link in raw_links if link))
         # 更新任务总数和状态
         self.total_task_count = len(self.link_list)
-        self.change_status('running')
+        self.change_status("running")
 
     def setup_share(self, expiry: int, password: str, random_password: bool) -> None:
         """准备参数，更新状态"""
         # 从设置对话框获取参数变量
-        self.expiry, self.password, self.random_password = expiry, password, random_password
+        self.expiry, self.password, self.random_password = (
+            expiry,
+            password,
+            random_password,
+        )
         # 更新任务总数和状态
         self.total_task_count = len(self.dir_list_all)
-        self.change_status('sharing')
+        self.change_status("sharing")
 
     def handle_input(self, task_count_check: bool = True) -> bool:
         """输入检查，如链接数限制和 cookie 格式"""
         # 转存时才检查输入链接数量
         if task_count_check:
-            if not self.check_condition(self.total_task_count != 0, message='无有效链接。'):
+            if not self.check_condition(
+                self.total_task_count != 0, message="无有效链接。"
+            ):
                 return False
-            if not self.check_condition(self.total_task_count <= SAVE_LIMIT,
-                                        message=f'批量转存一次不能超过 {SAVE_LIMIT}，当前链接数：{self.total_task_count}'):
+            if not self.check_condition(
+                self.total_task_count <= SAVE_LIMIT,
+                message=f"批量转存一次不能超过 {SAVE_LIMIT}，当前链接数：{self.total_task_count}",
+            ):
                 return False
 
         # cookie 带非 ascii 字符，或不包含 BAIDUID 时，铁定不对
-        if not self.check_condition(self.cookie.isascii() and self.cookie.find('BAIDUID') != -1,
-                                    message='百度网盘 cookie 输入不正确，请查看使用帮助。'):
+        if not self.check_condition(
+            self.cookie.isascii() and self.cookie.find("BAIDUID") != -1,
+            message="百度网盘 cookie 输入不正确，请查看使用帮助。",
+        ):
             return False
         # 非法字符由官方规定的。符号 / 可以使用，作为子目录的分隔符
-        if not self.check_condition(not any(char in self.folder_name for char in INVALID_CHARS),
-                                    message=r'转存目录名有非法字符，不能包含：< > | * ? \ :'):
+        if not self.check_condition(
+            not any(char in self.folder_name for char in INVALID_CHARS),
+            message=r"转存目录名有非法字符，不能包含：< > | * ? \ :",
+        ):
             return False
         return True
 
     def handle_bdstoken(self) -> bool:
         """获取 bdstoken 相关逻辑"""
         self.network.bdstoken = self.network.get_bdstoken()
-        return self.check_condition(not isinstance(self.network.bdstoken, int),
-                                    message=f'没获取到 bdstoken 参数，错误代码：{self.network.bdstoken}')
+        return self.check_condition(
+            not isinstance(self.network.bdstoken, int),
+            message=f"没获取到 bdstoken 参数，错误代码：{self.network.bdstoken}",
+        )
 
     def handle_list_dir(self) -> bool:
         """获取目标目录下的文件和目录列表"""
-        self.dir_list_all = self.network.get_dir_list(f'/{self.folder_name}')
-        return self.check_condition(not isinstance(self.dir_list_all, int) and bool(self.dir_list_all),
-                                    message=f'目录 {self.folder_name} 中没获取到任何内容，请求返回：{self.dir_list_all}')
+        self.dir_list_all = self.network.get_dir_list(f"/{self.folder_name}")
+        return self.check_condition(
+            not isinstance(self.dir_list_all, int) and bool(self.dir_list_all),
+            message=f"目录 {self.folder_name} 中没获取到任何内容，请求返回：{self.dir_list_all}",
+        )
 
     def handle_create_dir(self, folder_name: str) -> bool:
         """新建目录。如果目录已存在则不新建，否则会建立一个带时间戳的空目录"""
-        result = self.network.get_dir_list(f'/{folder_name}')
+        result = self.network.get_dir_list(f"/{folder_name}")
         # 如果 result 为错误代码数字，代表目标目录不存在
         if self.folder_name and isinstance(result, int):
             return_code = self.network.create_dir(folder_name)
-            if not self.check_condition(return_code == 0,
-                                        message=f'创建目录失败，错误代码：{return_code}'):
+            if not self.check_condition(
+                return_code == 0, message=f"创建目录失败，错误代码：{return_code}"
+            ):
                 return False
         return True
 
-    def handle_process_save(self, on_status: Optional[Callable] = None,
-                            on_log: Optional[Callable] = None,
-                            on_pause: Optional[Callable] = None,
-                            running: bool = True) -> bool:
+    def handle_process_save(
+        self,
+        on_status: Optional[Callable] = None,
+        on_log: Optional[Callable] = None,
+        on_pause: Optional[Callable] = None,
+        running: bool = True,
+    ) -> bool:
         """执行批量转存；任一任务流程失败则返回 False。"""
         for url_code in self.link_list:
             if not self.process_save(url_code, on_status, on_log, on_pause, running):
                 return False
         return True
 
-    def handle_process_share(self, on_status: Optional[Callable] = None,
-                             on_log: Optional[Callable] = None,
-                             on_links: Optional[Callable] = None) -> bool:
+    def handle_process_share(
+        self,
+        on_status: Optional[Callable] = None,
+        on_log: Optional[Callable] = None,
+        on_links: Optional[Callable] = None,
+    ) -> bool:
         """执行批量分享；任一任务流程失败则返回 False。"""
         for info in self.dir_list_all:
             if not self.process_share(info, on_status, on_log, on_links):
                 return False
         return True
 
-    def process_save(self, url_code: str,
-                     on_status: Optional[Callable] = None,
-                     on_log: Optional[Callable] = None,
-                     on_pause: Optional[Callable] = None,
-                     running: bool = True) -> bool:
+    def process_save(
+        self,
+        url_code: str,
+        on_status: Optional[Callable] = None,
+        on_log: Optional[Callable] = None,
+        on_pause: Optional[Callable] = None,
+        running: bool = True,
+    ) -> bool:
         """执行转存操作并记录结果"""
         # 跳过非网盘链接
-        if 'https://pan.baidu.com/' not in url_code:
-            self.insert_logs(on_log, f'不支持的链接：{url_code}')
+        if "https://pan.baidu.com/" not in url_code:
+            self.insert_logs(on_log, f"不支持的链接：{url_code}")
             return False
         else:
             # 执行转存过程，通过简单的循环判断是否要暂停
@@ -176,76 +235,84 @@ class Operation:
                 return False
 
         # 处理完毕一个链接，更新状态栏任务计数
-        self.change_status('update', on_status)
+        self.change_status("update", on_status)
         return True
 
-    def process_share(self, info: Dict[str, Any],
-                      on_status: Optional[Callable] = None,
-                      on_log: Optional[Callable] = None,
-                      on_links: Optional[Callable] = None) -> bool:
+    def process_share(
+        self,
+        info: Dict[str, Any],
+        on_status: Optional[Callable] = None,
+        on_log: Optional[Callable] = None,
+        on_links: Optional[Callable] = None,
+    ) -> bool:
         """执行分享操作并记录结果"""
         # 插入要分享的文件或文件夹到链接输入框，对文件夹加入 "/" 标记来区别
         is_dir = "/" if info["isdir"] == 1 else ""
         filename = f"{info['server_filename']}{is_dir}"
-        msg = f'目录：{filename}' if is_dir else f'文件：{filename}'
+        msg = f"目录：{filename}" if is_dir else f"文件：{filename}"
         self.insert_logs(on_log, msg, alt=True, on_links=on_links)
 
         # 处理提取码
         password = self.password if not self.random_password else generate_code()
 
         # 发送创建分享请求
-        r = self.network.create_share(info['fs_id'], EXP_MAP[self.expiry], password)
+        r = self.network.create_share(info["fs_id"], EXP_MAP[self.expiry], password)
         if isinstance(r, str):
-            result = f'分享成功：{r}?pwd={password} {msg}'
+            result = f"分享成功：{r}?pwd={password} {msg}"
             success = True
         else:
-            result = f'分享失败：错误代码（{r}） {msg}'
+            result = f"分享失败：错误代码（{r}） {msg}"
             success = False
 
         # 记录日志，更改状态
         self.insert_logs(on_log, result)
-        self.change_status('update', on_status)
+        self.change_status("update", on_status)
         return success
 
     # noinspection PyArgumentList
     def change_status(self, status: str, on_status: Optional[Callable] = None) -> None:
         """运行状态变化更新函数"""
-        if status == 'init':
+        if status == "init":
             self.running = False
-        elif status == 'running':
+        elif status == "running":
             self.running = True
             if on_status:
-                on_status('running')
-        elif status == 'paused':
+                on_status("running")
+        elif status == "paused":
             self.running = False
             if on_status:
-                on_status('paused')
-        elif status == 'update':
+                on_status("paused")
+        elif status == "update":
             self.completed_task_count += 1
             if on_status:
-                on_status('update', self.completed_task_count, self.total_task_count)
-        elif status == 'sharing':
+                on_status("update", self.completed_task_count, self.total_task_count)
+        elif status == "sharing":
             self.running = False
             if on_status:
-                on_status('sharing')
-        elif status == 'error':
+                on_status("sharing")
+        elif status == "error":
             if on_status:
-                on_status('error')
+                on_status("error")
         else:
             self.running = False
             if on_status:
-                on_status('stopped')
+                on_status("stopped")
 
     def check_condition(self, condition: bool, message: str) -> bool:
         """检查条件；condition 为 True 表示通过，失败时记录日志并返回 False。"""
         if not condition:
-            self.change_status('error')
+            self.change_status("error")
             self.insert_logs(None, message)
             return False
         return True
 
-    def insert_logs(self, on_log: Optional[Callable], message: str,
-                    alt: bool = False, on_links: Optional[Callable] = None) -> None:
+    def insert_logs(
+        self,
+        on_log: Optional[Callable],
+        message: str,
+        alt: bool = False,
+        on_links: Optional[Callable] = None,
+    ) -> None:
         """
         在文本框末尾插入内容
 
@@ -256,15 +323,18 @@ class Operation:
         """
         if alt:
             if on_links:
-                on_links(f'{message}\n')
+                on_links(f"{message}\n")
         else:
             if on_log:
-                on_log(f'{message}\n')
+                on_log(f"{message}\n")
 
-    def pause_detection(self, url_code: str,
-                        on_log: Optional[Callable] = None,
-                        on_pause: Optional[Callable] = None,
-                        running: bool = True) -> bool:
+    def pause_detection(
+        self,
+        url_code: str,
+        on_log: Optional[Callable] = None,
+        on_pause: Optional[Callable] = None,
+        running: bool = True,
+    ) -> bool:
         """循环检测暂停逻辑，每个转存任务开始时都会检测"""
         # 只要 self.running 状态没变，会一直等待。而状态变化由用户点击按钮控制
         while not self.running:
@@ -297,39 +367,62 @@ class Operation:
                 return bdclnd
 
             # 更新 bdclnd 到 cookie
-            self.network.headers['Cookie'] = update_cookie(bdclnd, self.network.headers['Cookie'])
+            self.network.headers["Cookie"] = update_cookie(
+                bdclnd, self.network.headers["Cookie"]
+            )
 
         # 直接访问没有提取码的链接，或更新 bdclnd 后再次访问，获取转存必须的 3 个参数
         response = self.network.get_transfer_params(url)
         # 这里不考虑网络异常了，假设请求一定会返回页面内容，对其进行解析
         return parse_response(response)
 
-    def check_only(self, result: Union[List[str], int], url_code: str,
-                   on_log: Optional[Callable] = None) -> None:
+    def check_only(
+        self,
+        result: Union[List[str], int],
+        url_code: str,
+        on_log: Optional[Callable] = None,
+    ) -> None:
         """开启检查模式时，只管判断返回值类型，并输出结果到日志"""
         if isinstance(result, list):
-            self.insert_logs(on_log, f'链接有效：{url_code} {"目录" if result[4] == ["1"] else "文件"}：{result[3]}')
+            self.insert_logs(
+                on_log,
+                f'链接有效：{url_code} {"目录" if result[4] == ["1"] else "文件"}：{result[3]}',
+            )
         else:
-            self.insert_logs(on_log, f'链接无效：{url_code} 原因：{ERROR_CODES.get(result, f"错误代码（{result}）")}')
+            self.insert_logs(
+                on_log,
+                f'链接无效：{url_code} 原因：{ERROR_CODES.get(result, f"错误代码（{result}）")}',
+            )
 
     def creat_user_dir(self, folder_name: str) -> Union[str, bool]:
         """建立用户指定目录，返回完整路径。目录名从原始输入取，函数为 custom_mode 专用"""
-        if not self.check_condition(bool(folder_name), message='必须输入转存目录'):
+        if not self.check_condition(bool(folder_name), message="必须输入转存目录"):
             return False
         # 对原始输入进行分割
         link_org_sep = self.link_list_org[self.completed_task_count].split()
         # 建立自定义目录，如果没有指定则用行数代替
         custom_folder = link_org_sep[0]
-        folder_name = f'{folder_name}/{custom_folder}' if 'pan.baidu.com' not in custom_folder else f'{folder_name}/{self.completed_task_count + 1}'
+        folder_name = (
+            f"{folder_name}/{custom_folder}"
+            if "pan.baidu.com" not in custom_folder
+            else f"{folder_name}/{self.completed_task_count + 1}"
+        )
         # 此处用替换处理目标目录名非法字符，不报错了
-        folder_name = folder_name.translate(str.maketrans({char: '_' for char in INVALID_CHARS}))
+        folder_name = folder_name.translate(
+            str.maketrans({char: "_" for char in INVALID_CHARS})
+        )
         if not self.handle_create_dir(folder_name):
             return False
 
         return folder_name
 
-    def save_file(self, result: Union[List[str], int], url_code: str, folder_name: str,
-                  on_log: Optional[Callable] = None) -> bool:
+    def save_file(
+        self,
+        result: Union[List[str], int],
+        url_code: str,
+        folder_name: str,
+        on_log: Optional[Callable] = None,
+    ) -> bool:
         """转存文件。返回结果为列表时，执行转存文件，否则跳过转存"""
         file_info = ""
         if isinstance(result, list):
@@ -341,7 +434,7 @@ class Operation:
                     return False
                 folder_name = custom_folder
                 result = self.network.transfer_file(result, folder_name)
-                file_info = f'{file_info} 转存到：{folder_name}'
+                file_info = f"{file_info} 转存到：{folder_name}"
             # 改在这里检查链接重复，在日志中查找。链接有出现过不转存，直接赋值结果为错误代码 4
             elif self._check_duplicate(url_code, on_log):
                 result = 4
@@ -350,9 +443,14 @@ class Operation:
                 result = self.network.transfer_file(result, folder_name)
 
         # 最后插入转存结果到日志框
-        self.insert_logs(on_log, f'{ERROR_CODES.get(result, f"转存失败，错误代码（{result}）")}：{url_code} {file_info}')
+        self.insert_logs(
+            on_log,
+            f'{ERROR_CODES.get(result, f"转存失败，错误代码（{result}）")}：{url_code} {file_info}',
+        )
         return isinstance(result, int) and result == 0
 
-    def _check_duplicate(self, url_code: str, on_log: Optional[Callable] = None) -> bool:
+    def _check_duplicate(
+        self, url_code: str, on_log: Optional[Callable] = None
+    ) -> bool:
         """检查链接是否重复出现（由外部通过 on_log 记录判定，简化处理返回 False）"""
         return False

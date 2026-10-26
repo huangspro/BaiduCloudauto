@@ -4,10 +4,16 @@ import threading
 
 class MessageBus:
     def __init__(self):
-        self.event_queue = queue.Queue()  # storing all events, their handlers are in HANDLERS
+        self.event_queue = (
+            queue.Queue()
+        )  # storing all events, their handlers are in HANDLERS
         # the message bus works in a sun thread
-        self.worker = threading.Thread(target=self.handle_events, name="EventBusWorker", daemon=True)
-        self.events = {}  # storing {event_name1:[subscriber1, subscriber2, subscriber3, ...], ...}
+        self.worker = threading.Thread(
+            target=self.handle_events, name="EventBusWorker", daemon=True
+        )
+        self.events = (
+            {}
+        )  # storing {event_name1:[subscriber1, subscriber2, subscriber3, ...], ...}
         self.worker.start()
 
     # subscribe event to message bus
@@ -37,6 +43,7 @@ class MessageBus:
             if event.name in self.events.keys():
                 for subscriber in self.events[event.name]:
                     subscriber(event.data)
+
 
 # instantiate a message bus as a global bus
 message_bus = MessageBus()

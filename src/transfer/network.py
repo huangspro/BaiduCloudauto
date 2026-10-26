@@ -5,6 +5,7 @@
 :contact: https://github.com/hxz393
 :copyright: Copyright 2024, hxz393. 保留所有权利。
 """
+
 import time
 from typing import Union, List, Any
 
@@ -27,7 +28,7 @@ class Network:
         """
         self.s = requests.Session()
         self.headers = HEADERS
-        self.bdstoken = ''
+        self.bdstoken = ""
         # 忽略证书验证警告
         requests.packages.urllib3.disable_warnings()
 
@@ -39,19 +40,26 @@ class Network:
 
         :return: 获取成功返回 bdstoken，获取失败返回错误代码
         """
-        url = f'{BASE_URL}/api/gettemplatevariable'
+        url = f"{BASE_URL}/api/gettemplatevariable"
         params = {
-            'clienttype': '0',
-            'app_id': '38824127',
-            'web': '1',
-            'fields': '["bdstoken","token","uk","isdocuser","servertime"]'
+            "clienttype": "0",
+            "app_id": "38824127",
+            "web": "1",
+            "fields": '["bdstoken","token","uk","isdocuser","servertime"]',
         }
 
-        r = self.s.get(url=url, params=params, headers=self.headers, timeout=10, allow_redirects=False, verify=False)
-        if r.json()['errno'] != 0:
-            return r.json()['errno']
+        r = self.s.get(
+            url=url,
+            params=params,
+            headers=self.headers,
+            timeout=10,
+            allow_redirects=False,
+            verify=False,
+        )
+        if r.json()["errno"] != 0:
+            return r.json()["errno"]
 
-        return r.json()['result']['bdstoken']
+        return r.json()["result"]["bdstoken"]
 
     @retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=2000)
     def get_dir_list(self, folder_name: str) -> Union[List[Any], int]:
@@ -63,23 +71,30 @@ class Network:
         :param folder_name: 指定要获取列表的目录名
         :return: 获取成功时返回文件列表，获取失败时返回错误代码
         """
-        url = f'{BASE_URL}/api/list'
+        url = f"{BASE_URL}/api/list"
         params = {
-            'order': 'time',
-            'desc': '1',
-            'showempty': '0',
-            'web': '1',
-            'page': '1',
-            'num': '1000',
-            'dir': folder_name,
-            'bdstoken': self.bdstoken
+            "order": "time",
+            "desc": "1",
+            "showempty": "0",
+            "web": "1",
+            "page": "1",
+            "num": "1000",
+            "dir": folder_name,
+            "bdstoken": self.bdstoken,
         }
 
-        r = self.s.get(url=url, params=params, headers=self.headers, timeout=15, allow_redirects=False, verify=False)
-        if r.json()['errno'] != 0:
-            return r.json()['errno']
+        r = self.s.get(
+            url=url,
+            params=params,
+            headers=self.headers,
+            timeout=15,
+            allow_redirects=False,
+            verify=False,
+        )
+        if r.json()["errno"] != 0:
+            return r.json()["errno"]
 
-        return r.json()['list']
+        return r.json()["list"]
 
     @retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=2000)
     def create_dir(self, folder_name: str) -> int:
@@ -90,20 +105,25 @@ class Network:
         :param folder_name: 指定要建立的目录名
         :return: 获取请求返回的代码，成功时返回 0
         """
-        url = f'{BASE_URL}/api/create'
-        params = {
-            'a': 'commit',
-            'bdstoken': self.bdstoken
-        }
+        url = f"{BASE_URL}/api/create"
+        params = {"a": "commit", "bdstoken": self.bdstoken}
         data = {
-            'path': folder_name,
-            'isdir': '1',
-            'block_list': '[]',
+            "path": folder_name,
+            "isdir": "1",
+            "block_list": "[]",
         }
 
-        r = self.s.post(url=url, params=params, headers=self.headers, data=data, timeout=15, allow_redirects=False, verify=False)
+        r = self.s.post(
+            url=url,
+            params=params,
+            headers=self.headers,
+            data=data,
+            timeout=15,
+            allow_redirects=False,
+            verify=False,
+        )
 
-        return r.json()['errno']
+        return r.json()["errno"]
 
     @retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=2000)
     def verify_pass_code(self, link_url: str, pass_code: str) -> Union[str, int]:
@@ -115,30 +135,38 @@ class Network:
         :param pass_code: 提取码
         :return: 成功时返回 randsk 字符串，失败时返回错误代码
         """
-        url = f'{BASE_URL}/share/verify'
+        url = f"{BASE_URL}/share/verify"
         params = {
             # 可放心用暴力切片
-            'surl': link_url[25:48],
-            'bdstoken': self.bdstoken,
+            "surl": link_url[25:48],
+            "bdstoken": self.bdstoken,
             # 当前时间的毫秒级时间戳
-            't': str(int(round(time.time() * 1000))),
+            "t": str(int(round(time.time() * 1000))),
             # 下面是不明所以的固定参数
-            'channel': 'chunlei',
-            'web': '1',
-            'clienttype': '0'
+            "channel": "chunlei",
+            "web": "1",
+            "clienttype": "0",
         }
         data = {
-            'pwd': pass_code,
+            "pwd": pass_code,
             # 并没有发现下面两个参数的用途
-            'vcode': '',
-            'vcode_str': ''
+            "vcode": "",
+            "vcode_str": "",
         }
 
-        r = self.s.post(url=url, params=params, headers=self.headers, data=data, timeout=10, allow_redirects=False, verify=False)
-        if r.json()['errno'] != 0:
-            return r.json()['errno']
+        r = self.s.post(
+            url=url,
+            params=params,
+            headers=self.headers,
+            data=data,
+            timeout=10,
+            allow_redirects=False,
+            verify=False,
+        )
+        if r.json()["errno"] != 0:
+            return r.json()["errno"]
 
-        return r.json()['randsk']
+        return r.json()["randsk"]
 
     @retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=2000)
     def get_transfer_params(self, url: str) -> str:
@@ -163,27 +191,35 @@ class Network:
         :param folder_name: 转存目标目录
         :return: 返回转存请求结果代码
         """
-        url = f'{BASE_URL}/share/transfer'
+        url = f"{BASE_URL}/share/transfer"
         params = {
             # shareid 是文件 id
-            'shareid': params_list[0],
+            "shareid": params_list[0],
             # share_uk 猜是分享者的 id
-            'from': params_list[1],
-            'bdstoken': self.bdstoken,
-            'channel': 'chunlei',
-            'web': '1',
-            'clienttype': '0'
+            "from": params_list[1],
+            "bdstoken": self.bdstoken,
+            "channel": "chunlei",
+            "web": "1",
+            "clienttype": "0",
         }
         data = {
             # 针对一个分享链接带有多个分享文件的情况，转换一下列表格式
-            'fsidlist': f"[{','.join(params_list[2])}]",
+            "fsidlist": f"[{','.join(params_list[2])}]",
             # 目标目录为空，则直接等于根目录 '/'
-            'path': f'/{folder_name}'
+            "path": f"/{folder_name}",
         }
 
-        r = self.s.post(url=url, params=params, headers=self.headers, data=data, timeout=30, allow_redirects=False, verify=False)
+        r = self.s.post(
+            url=url,
+            params=params,
+            headers=self.headers,
+            data=data,
+            timeout=30,
+            allow_redirects=False,
+            verify=False,
+        )
 
-        return r.json()['errno']
+        return r.json()["errno"]
 
     @retry(stop_max_attempt_number=3, wait_random_min=1000, wait_random_max=2000)
     def create_share(self, fs_id: int, expiry: str, password: str) -> Union[str, int]:
@@ -195,25 +231,33 @@ class Network:
         :param password: 自定义提取码
         :return: 成功时返回生成的分享链接，失败时返回错误代码
         """
-        url = f'{BASE_URL}/share/set'
+        url = f"{BASE_URL}/share/set"
         params = {
-            'channel': 'chunlei',
-            'bdstoken': self.bdstoken,
-            'clienttype': '0',
-            'app_id': '250528',
-            'web': '1'
+            "channel": "chunlei",
+            "bdstoken": self.bdstoken,
+            "clienttype": "0",
+            "app_id": "250528",
+            "web": "1",
         }
         data = {
-            'period': expiry,
-            'pwd': password,
-            'eflag_disable': 'true',
-            'channel_list': '[]',
-            'schannel': '4',
-            'fid_list': f'[{fs_id}]'
+            "period": expiry,
+            "pwd": password,
+            "eflag_disable": "true",
+            "channel_list": "[]",
+            "schannel": "4",
+            "fid_list": f"[{fs_id}]",
         }
 
-        r = self.s.post(url=url, params=params, headers=self.headers, data=data, timeout=15, allow_redirects=False, verify=False)
-        if r.json()['errno'] != 0:
-            return r.json()['errno']
+        r = self.s.post(
+            url=url,
+            params=params,
+            headers=self.headers,
+            data=data,
+            timeout=15,
+            allow_redirects=False,
+            verify=False,
+        )
+        if r.json()["errno"] != 0:
+            return r.json()["errno"]
 
-        return r.json()['link']
+        return r.json()["link"]

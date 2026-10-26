@@ -5,11 +5,10 @@ from src.event_handler.message_bus import message_bus
 import src.utils as utils
 from src.event_handler.event import *
 
-
-
 HANDLERS = []  # storing all the handlers
-USER_LINKS = str(Path(__file__).resolve().parent.parent / "user_links") + "/"  # the path pointing to "src/user_links/"
-
+USER_LINKS = (
+    str(Path(__file__).resolve().parent.parent / "user_links") + "/"
+)  # the path pointing to "src/user_links/"
 
 
 # decorator, for adding handler functions to the list HANDLERS
@@ -25,16 +24,20 @@ def transfer_command_handler(command_bus, transfer_command):
     path = "/apps/autotool/mydir/" + transfer_command.to_extract_code + "/"
     if transfer_command.name == "TransferCommand":
         print(message_bus.events)
-        if utils.transfer_share_link.transfer(folder_name=path,links=transfer_command.share_link,password=transfer_command.password):
+        if utils.transfer_share_link.transfer(
+            folder_name=path,
+            links=transfer_command.share_link,
+            password=transfer_command.password,
+        ):
             # raise the transfer successful event
             message_bus.post(TransferSucceeded("文件转存成功"))
             # start get links from baidu cloud
-            command_bus.raise_command(ReturnLinksCommand(path, transfer_command.to_extract_code))
+            command_bus.raise_command(
+                ReturnLinksCommand(path, transfer_command.to_extract_code)
+            )
         else:
             # raise the transfer failed event
             message_bus.post(TransferFailed("文件转存失败"))
-
-
 
 
 # get links from baidu cloud and save it to "src/user_links/to_extract_code.txt"

@@ -3,7 +3,6 @@ refresh access token by the refresh_token
 and then store the new access_token and refresh_token to files
 """
 
-
 import requests
 import sys
 from src.utils.read_token_file import get
@@ -21,7 +20,7 @@ params = {
     "grant_type": "refresh_token",
     "refresh_token": refresh_token,
     "client_id": appkey,
-    "client_secret": secretid
+    "client_secret": secretid,
 }
 
 response = requests.get(url, params=params, timeout=15)
@@ -40,6 +39,3 @@ with open("access_token.txt", "w", encoding="utf-8") as f:
 
 with open("refresh_token.txt", "w", encoding="utf-8") as f:
     f.write(refresh_token)
-
-
-
