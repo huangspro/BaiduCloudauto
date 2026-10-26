@@ -1,3 +1,7 @@
+"""
+get download links of a file in baidu cloud
+"""
+
 import json
 import requests
 from src.utils.read_token_file import get

@@ -1,3 +1,9 @@
+"""
+get access_token based on the authorization code
+and store the access_token to src/token/access_token.txt
+"""
+
+
 import requests
 import sys
 from src.utils.read_token_file import get

@@ -1,3 +1,8 @@
+"""
+read text content from a txt file in src/token/
+"""
+
+
 import sys
 from pathlib import Path
 

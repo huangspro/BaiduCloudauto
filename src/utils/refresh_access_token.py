@@ -1,3 +1,9 @@
+"""
+refresh access token by the refresh_token
+and then store the new access_token and refresh_token to files
+"""
+
+
 import requests
 import sys
 from src.utils.read_token_file import get

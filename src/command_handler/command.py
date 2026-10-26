@@ -4,7 +4,7 @@ class Command(ABC):
     def __init__(self, name):
         self.name = name
 
-
+# start transferring
 class TransferCommand(Command):
     def __init__(self, share_link, password, to_extract_code, email):
         super().__init__("TransferCommand")
@@ -13,11 +13,13 @@ class TransferCommand(Command):
         self.to_extract_code = to_extract_code
         self.email = email
 
+# no use
 class DownloadCommand(Command):
     def __init__(self, file_name):
         super().__init__("DownloadCommand")
         self.file_name = file_name
 
+# command of returning links
 class ReturnLinksCommand(Command):
     def __init__(self, path:list, to_extract_code):
         super().__init__("ReturnLinksCommand")

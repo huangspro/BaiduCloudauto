@@ -10,6 +10,7 @@ app = Flask(__name__,  template_folder="html")
 USER_LINKS = str(Path(__file__).resolve().parent.parent / "user_links") + "/"
 
 
+# for user applying transferring
 @app.route("/apply", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -26,6 +27,7 @@ def index():
     return render_template("apply.html")
 
 
+# return download links to users
 @app.route("/download", methods=["GET", "POST"])
 def download():
     if request.method == "POST":

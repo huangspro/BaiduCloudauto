@@ -1,3 +1,9 @@
+"""
+get file information of a single on baidu cloud
+get file information of all file from a folder on baidu cloud
+"""
+
+
 import requests
 from src.utils.read_token_file import get
 

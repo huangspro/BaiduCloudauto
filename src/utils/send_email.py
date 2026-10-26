@@ -1,3 +1,8 @@
+"""
+send email to users
+"""
+
+
 import src.event_handler.message_bus as MB
 
 
