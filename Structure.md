@@ -36,6 +36,7 @@
 │   │   ├── appkey.txt
 │   │   ├── authorization_code.txt
 │   │   ├── cookie.txt
+│   │   ├── email_password.txt
 │   │   ├── refresh_token.txt
 │   │   └── secretkey.txt
 │   ├── transfer
@@ -55,5 +56,5 @@
 │       └── transfer_share_link.py
 └── Workflow.md
 
-14 directories, 41 files
+14 directories, 42 files
 ```

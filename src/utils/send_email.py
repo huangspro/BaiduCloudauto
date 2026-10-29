@@ -1,7 +1,7 @@
 """
 send email to users
 """
-
+import os
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
@@ -13,19 +13,29 @@ from src.utils.read_token_file import get
 
 TOKEN_DIR = str(Path(__file__).resolve().parent.parent / "token") + "/"
 
-with open(TOKEN_DIR + "email_password.txt", "r") as f:
-    email_setting = f.read().split("\n")
-    smtp_server = email_setting[0].split(":")[1].strip()
-    smtp_port = email_setting[1].split(":")[1].strip()
-    sender = email_setting[2].split(":")[1].strip()
-    password = email_setting[3].split(":")[1].strip()
-print(smtp_server, smtp_port, sender, password)
+
+
+
+
+
 
 
 # data should contain \:
 # receiver
 # message
 def send_email(data):
+    if not os.path.exists(TOKEN_DIR + "email_password.txt"):
+        print("email sending service is not available, please add token/email_password.txt file")
+        return
+
+    with open(TOKEN_DIR + "email_password.txt", "r") as f:
+        email_setting = f.read().split("\n")
+        smtp_server = email_setting[0].split(":")[1].strip()
+        smtp_port = email_setting[1].split(":")[1].strip()
+        sender = email_setting[2].split(":")[1].strip()
+        password = email_setting[3].split(":")[1].strip()
+
+
     print("sending email to", data["receiver"])
     message = MIMEText(data["message"], "plain", "utf-8")
     message["From"] = Header(sender, "utf-8")
