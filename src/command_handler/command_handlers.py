@@ -30,7 +30,7 @@ def transfer_command_handler(command_bus, transfer_command):
             password=transfer_command.password,
         ):
             # raise the transfer successful event
-            message_bus.post(TransferSucceeded("文件转存成功"))
+            message_bus.post(TransferSucceeded({"message":f"分享链接：{transfer_command.share_link}转存成功", "receiver":transfer_command.email}))
             # start get links from baidu cloud
             command_bus.raise_command(
                 ReturnLinksCommand(path, transfer_command.to_extract_code)
