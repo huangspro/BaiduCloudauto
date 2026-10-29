@@ -18,13 +18,11 @@ password = get("email_password.txt")
 # receiver
 # message
 def send_email(data):
-    try:
-        message = MIMEText(data["message"], "plain", "utf-8")
-        message["From"] = Header(sender, "utf-8")
-        message["To"] = Header(data["receiver"], "utf-8")
-        message["Subject"] = Header("email message from baiduauto", "utf-8")
-    except Exception as e:
-        print("data:", data)
+    print("sending email to", data["receiver"])
+    message = MIMEText(data["message"], "plain", "utf-8")
+    message["From"] = Header(sender, "utf-8")
+    message["To"] = Header(data["receiver"], "utf-8")
+    message["Subject"] = Header("email message from baiduauto", "utf-8")
 
     smtp = smtplib.SMTP_SSL(smtp_server, smtp_port)
     try:

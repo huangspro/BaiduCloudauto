@@ -23,7 +23,6 @@ def register_handler(func):
 def transfer_command_handler(command_bus, transfer_command):
     path = "/apps/autotool/mydir/" + transfer_command.to_extract_code + "/"
     if transfer_command.name == "TransferCommand":
-        print(message_bus.events)
         if utils.transfer_share_link.transfer(
             folder_name=path,
             links=transfer_command.share_link,
@@ -33,7 +32,7 @@ def transfer_command_handler(command_bus, transfer_command):
             message_bus.post(
                 TransferSucceeded(
                     {
-                        "message": f"分享链接：{transfer_command.share_link}转存成功",
+                        "message": f"分享链接：{transfer_command.share_link}\n转存成功",
                         "receiver": transfer_command.email,
                     }
                 )
@@ -44,7 +43,14 @@ def transfer_command_handler(command_bus, transfer_command):
             )
         else:
             # raise the transfer failed event
-            message_bus.post(TransferFailed("文件转存失败"))
+            message_bus.post(
+                TransferFailed(
+                    {
+                        "message": f"分享链接：{transfer_command.share_link}\n转存失败",
+                        "receiver": transfer_command.email,
+                    }
+                )
+            )
 
 
 # get links from baidu cloud and save it to "src/user_links/to_extract_code.txt"
