@@ -1,17 +1,18 @@
 """
 send email to users
 """
+
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
 import src.event_handler.message_bus as MB
 from src.utils.read_token_file import get
 
-
 smtp_server = "smtp.163.com"
 smtp_port = 465
 sender = "13612276628@163.com"
 password = get("email_password.txt")
+
 
 # data should contain \:
 # receiver
@@ -31,6 +32,7 @@ def send_email(data):
         print(f"failed to send: {e}")
     finally:
         smtp.quit()
+
 
 MB.message_bus.subscribe("TransferSucceeded", send_email)
 MB.message_bus.subscribe("TransferFailed", send_email)
